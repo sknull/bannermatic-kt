@@ -1,7 +1,9 @@
 package de.visualdigits.kotlin.bannermatic.model.ansicolor
 
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 
+@Disabled("Only for manual testing")
 class AnsiColorTest {
 
     @Test

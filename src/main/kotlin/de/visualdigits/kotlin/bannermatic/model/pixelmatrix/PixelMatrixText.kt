@@ -1,6 +1,6 @@
 package de.visualdigits.kotlin.bannermatic.model.pixelmatrix
 
-import de.visualdigits.kotlin.bannermatic.model.ansicolor.*
+import de.visualdigits.kotlin.bannermatic.model.ansicolor.AnsiColorChar
 import de.visualdigits.kotlin.bannermatic.model.font.Direction
 import de.visualdigits.kotlin.bannermatic.model.font.FigletFont
 import de.visualdigits.kotlin.bannermatic.model.font.FigletSmusher

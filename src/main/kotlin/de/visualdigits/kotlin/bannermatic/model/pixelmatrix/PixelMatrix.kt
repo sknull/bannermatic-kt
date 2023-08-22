@@ -1,15 +1,27 @@
 package de.visualdigits.kotlin.bannermatic.model.pixelmatrix
 
-import de.visualdigits.kotlin.bannermatic.model.ansicolor.*
+import de.visualdigits.kotlin.bannermatic.model.ansicolor.AnsiCode
+import de.visualdigits.kotlin.bannermatic.model.ansicolor.AnsiColor
+import de.visualdigits.kotlin.bannermatic.model.ansicolor.AnsiColor4bit
+import de.visualdigits.kotlin.bannermatic.model.ansicolor.AnsiColorChar
+import de.visualdigits.kotlin.bannermatic.model.ansicolor.AnsiColorRgb
+import java.io.File
 
 @Suppress("UNCHECKED_CAST")
 open class PixelMatrix<T : PixelMatrix<T>>(
     var width: Int = 80,
     var height: Int = 80,
-    val initialChar: AnsiColorChar = AnsiColorChar()
+    val initialChar: AnsiColorChar = AnsiColorChar(),
+    initializeMatrix: Boolean = false
 ) {
 
     private val matrix: MutableList<MutableList<AnsiColorChar>> = mutableListOf()
+
+    init {
+        if (initializeMatrix) {
+            initializeMatrix()
+        }
+    }
 
     protected fun initializeMatrix() {
         for (y in 0 until height) {
@@ -30,6 +42,10 @@ open class PixelMatrix<T : PixelMatrix<T>>(
             sb.append("${AnsiColor4bit.RESET}\n")
         }
         return sb.toString()
+    }
+
+    fun writeToFile(file: File) {
+        file.writeText(toString())
     }
 
     fun set(x: Int, y: Int, char: AnsiColorChar): T {

@@ -21,3 +21,4 @@ assets/
 **/*.dtmp
 /infra/cdk.context.json
 /pom.xml.versionsBackup
+/fortune.bgv

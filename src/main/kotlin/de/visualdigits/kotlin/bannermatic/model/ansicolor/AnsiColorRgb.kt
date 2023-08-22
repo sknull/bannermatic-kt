@@ -1,5 +1,6 @@
 package de.visualdigits.kotlin.bannermatic.model.ansicolor
 
+import de.visualdigits.kotlin.extensions.color
 import java.awt.Color
 import kotlin.math.max
 import kotlin.math.min
@@ -25,6 +26,8 @@ class AnsiColorRgb(
             a = a
         )
     }
+
+    constructor(color: String, isBackground: Boolean = false): this(color.color(), if(isBackground) AnsiCode.BACKGROUND else AnsiCode.FOREGROUND)
 
     constructor(color: Color, bgColor: AnsiCode = AnsiCode.FOREGROUND): this(
         bgColor = bgColor,
