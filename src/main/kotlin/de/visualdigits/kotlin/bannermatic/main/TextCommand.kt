@@ -51,6 +51,7 @@ class TextCommand: Subcommand("text", "Generate pixel matrix from a text.") {
         shortName = "t",
         description = "The text to render - will break up into multiple lines when the width exceeds the max width given."
     ).required()
+
     val marginLeft by option(
         type = ArgType.Int,
         shortName = "ml",
@@ -71,6 +72,7 @@ class TextCommand: Subcommand("text", "Generate pixel matrix from a text.") {
         shortName = "mb",
         description = "The margin to add on the bottom (defaults to 0)."
     ).default(0)
+
     val outputFile by option(
         type = ArgType.String,
         shortName = "o",
@@ -89,10 +91,11 @@ class TextCommand: Subcommand("text", "Generate pixel matrix from a text.") {
             textWidth = width,
             justify = justify,
             initialChar = initialChar,
-            marginLeft = marginLeft,
-            marginTop = marginTop,
-            marginRight = marginRight,
-            marginBottom = marginBottom,
+        ).extend(
+            left = marginLeft,
+            top = marginTop,
+            right = marginRight,
+            bottom = marginBottom
         )
 
         if (outputFile != null) {

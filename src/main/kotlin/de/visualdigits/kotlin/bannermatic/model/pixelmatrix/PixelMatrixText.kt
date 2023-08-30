@@ -8,15 +8,12 @@ import de.visualdigits.kotlin.bannermatic.model.font.Justify
 
 class PixelMatrixText(
     val textWidth: Int = 80,
+    val ensureWidth: Boolean = false,
     initialChar: AnsiColorChar = AnsiColorChar(),
     val fontName: String = "basic",
     val direction: Direction = Direction.auto,
     val justify: Justify = Justify.auto,
-    val text: String,
-    val marginLeft: Int = 0,
-    val marginTop: Int = 0,
-    val marginRight: Int = 0,
-    val marginBottom: Int = 0,
+    val text: String
 ): PixelMatrix<PixelMatrixText>(
     initialChar = initialChar
 ) {
@@ -34,27 +31,31 @@ class PixelMatrixText(
 
     private var blankMarkers = mutableListOf<Pair<Array<String>, Int>>()
     private val queue = mutableListOf<Array<String>>()
-    private var buffer = Array<String>(font.height) { "" }
+    private var buffer = Array(font.height) { "" }
 
     private var smusher = FigletSmusher(direction, this.font)
 
     init {
         while (iterator < text.length) {
-            addCharToProduct()
+            addChar()
             iterator += 1
         }
         if (buffer[0].isNotEmpty()) {
             queue.add(buffer)
         }
-        val charMatrix = queue.map { buffer ->
+        var charMatrix = queue.map { buffer ->
             justifyString(justify, buffer)
                 .map { it.replace(font.hardBlank, " ") }
         }
         val rows = charMatrix.size
-        val rowHeight = charMatrix.map { it.size }.max()
+        val rowHeight = charMatrix.maxOf { it.size }
         height = rows * rowHeight
-        width = charMatrix.flatMap { l -> l.map { s -> s.length } }.max()
+        charMatrix = trimLeft(charMatrix)
+        width = charMatrix.maxOf { line -> line.maxOf { row -> row.length } }
         initializeMatrix()
+        if (ensureWidth) {
+
+        }
         charMatrix.forEachIndexed { l, line ->
             line.forEachIndexed { y, row ->
                 row.forEachIndexed { x, char ->
@@ -62,10 +63,36 @@ class PixelMatrixText(
                 }
             }
         }
-        extend(left = marginLeft, top = marginTop, right = marginRight, bottom = marginBottom)
+        ensureWidth()
     }
 
-    private fun addCharToProduct() {
+    private fun ensureWidth() {
+        if (ensureWidth && width < textWidth) {
+            when (justify) {
+                Justify.auto, Justify.left -> {
+                    extend(0, 0, textWidth - width, 0)
+                }
+
+                Justify.right -> {
+                    extend(textWidth - width, 0, 0, 0)
+                }
+
+                Justify.center -> {
+                    val diff = textWidth - width
+                    val left = diff / 2
+                    val right = diff - left
+                    extend(left, 0, right, 0)
+                }
+            }
+        }
+    }
+
+    private fun trimLeft(charMatrix: List<List<String>>): List<List<String>> {
+        val spaces = charMatrix.flatMap { line -> line.map { row -> "^ +".toRegex().find(row)?.value?.length ?: 0 } }.min()
+        return charMatrix.map { line -> line.map { it.drop(spaces) } }
+    }
+
+    private fun addChar() {
         val tuple = Pair(buffer.clone(), iterator)
         val c = chars[iterator]
         if (c == '\n'.code) {

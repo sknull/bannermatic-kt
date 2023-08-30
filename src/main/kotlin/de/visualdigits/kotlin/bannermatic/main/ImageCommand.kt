@@ -45,6 +45,27 @@ class ImageCommand: Subcommand("image", "Generate pixel matrix from an image.") 
         description = "The pixelratio to use (default to 0.4) maybe needs to be adjusted to look correct on your terminal."
     ).default(0.4)
 
+    val marginLeft by option(
+        type = ArgType.Int,
+        shortName = "ml",
+        description = "The margin to add on the left side (defaults to 0)."
+    ).default(0)
+    val marginTop by option(
+        type = ArgType.Int,
+        shortName = "mt",
+        description = "The margin to add on the top (defaults to 0)."
+    ).default(0)
+    val marginRight by option(
+        type = ArgType.Int,
+        shortName = "mr",
+        description = "The margin to add on the right side (defaults to 0)."
+    ).default(0)
+    val marginBottom by option(
+        type = ArgType.Int,
+        shortName = "mb",
+        description = "The margin to add on the bottom (defaults to 0)."
+    ).default(0)
+
     val outputFile by option(
         type = ArgType.String,
         shortName = "o",
@@ -63,6 +84,11 @@ class ImageCommand: Subcommand("image", "Generate pixel matrix from an image.") 
             initialChar = initialChar,
             useSubPixels = useSubPixels,
             pixelRatio = pixelRatio
+        ).extend(
+            left = marginLeft,
+            top = marginTop,
+            right = marginRight,
+            bottom = marginBottom
         )
 
         if (outputFile != null) {

@@ -46,10 +46,13 @@ class PixelMatrixTest {
     @Test
     fun testText() {
         val pm = PixelMatrixText(
-            fontName = "basic",
-            textWidth = 80,
-            text = "Raspberry Pi",
-            initialChar = AnsiColorChar(fgColor = AnsiColorRgb(r = 187, g = 16, b = 66))
+            text = "Team GRU",
+            textWidth = 40,
+            justify = Justify.center,
+            initialChar = AnsiColorChar(
+                fgColor = AnsiColorRgb(r = 187, g = 16, b = 66),
+                bgColor = AnsiColorRgb(r = 0, g = 255, b = 0)
+            )
         )
         println(pm)
     }
@@ -63,6 +66,7 @@ class PixelMatrixTest {
         val pm = PixelMatrixBanner(
 
             imageFile = imageFile,
+            imageWidth = 40,
 //            imageWidth = 27,
 //            imageWidth = 76,
 //            initialCharImage = AnsiColorChar(
@@ -71,19 +75,20 @@ class PixelMatrixTest {
 //            ),
 
 //            text = "Raspberry Pi",
-            text = "Hello World!",
-//            justify = Justify.center,
-//            initialCharText = AnsiColorChar(
-//                fgColor = AnsiColorRgb(r = 187, g = 16, b = 66)
-//            ),
-
-//            textGap = 2,
-//            textPosition = TextPosition.bottom
+            text = "Team GRU",
+            textWidth = 40,
+            justify = Justify.center,
+            initialCharText = AnsiColorChar(
+                fgColor = AnsiColorRgb(r = 255, g = 230, b = 100)
+            ),
+            textGap = 2,
+            textPosition = TextPosition.bottom
         )
         .extend(0, 2, 0, 0)
 //        .extend(2, 1, 2, 1)
 //        .extend(2, 1, 2, 1, AnsiColorChar(bgColor = AnsiColorRgb(r = 117, g = 169, b = 39)))
 //        .extend(2, 1, 2, 1, AnsiColorChar(bgColor = AnsiColorRgb(r = 187, g = 16, b = 66)))
+        pm.writeToFile(File("./src/test/resources/banners/banner_team-gru.txt"))
         println(pm)
     }
 }
