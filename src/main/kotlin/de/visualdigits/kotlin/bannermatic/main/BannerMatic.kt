@@ -11,7 +11,11 @@ class BannerMatic {
         @JvmStatic
         fun main(args: Array<String>) {
             val parser = ArgParser("bannermatic-kt")
-            parser.subcommands(ImageCommand(), TextCommand(), BannerCommand())
+            parser.subcommands(
+                ImageCommand(),
+                TextCommand(),
+                BannerCommand()
+            )
             parser.parse(args)
         }
     }

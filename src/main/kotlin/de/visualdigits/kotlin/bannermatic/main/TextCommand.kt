@@ -105,3 +105,4 @@ class TextCommand: Subcommand("text", "Generate pixel matrix from a text.") {
         }
     }
 }
+
