@@ -8,7 +8,7 @@ import de.visualdigits.kotlin.bannermatic.model.font.Justify
 
 class PixelMatrixText(
     val textWidth: Int = 80,
-    val ensureWidth: Boolean = false,
+    ensureWidth: Boolean = false,
     initialChar: AnsiColorChar = AnsiColorChar(),
     val fontName: String = "basic",
     val direction: Direction = Direction.auto,
@@ -18,33 +18,30 @@ class PixelMatrixText(
     initialChar = initialChar
 ) {
 
-    private var chars: List<Int> = text.map { it.code }
-            
-    private var font = FigletFont("fonts/$fontName.flf")
-
     private var iterator = 0
     private var maxSmush = 0
-
     private var curCharWidth = 0
     private var prevCharWidth = 0
     private var currentTotalWidth = 0
 
-    private var blankMarkers = mutableListOf<Pair<Array<String>, Int>>()
-    private val queue = mutableListOf<Array<String>>()
-    private var buffer = Array(font.height) { "" }
-
-    private var smusher = FigletSmusher(direction, this.font)
-
     init {
+        val fname = if (!fontName.endsWith(".flf") && !fontName.endsWith(".flc")) "$fontName.flf" else fontName
+        val font = FigletFont("fonts/$fname")
+        val buffer = Array(font.height) { "" }
+        val chars: List<Int> = text.map { it.code }
+        val blankMarkers = mutableListOf<Pair<Array<String>, Int>>()
+        val queue = mutableListOf<Array<String>>()
+        val smusher = FigletSmusher(direction, font)
+
         while (iterator < text.length) {
-            addChar()
+            addChar(buffer, chars, queue, blankMarkers, font, smusher, textWidth)
             iterator += 1
         }
         if (buffer[0].isNotEmpty()) {
             queue.add(buffer)
         }
-        var charMatrix = queue.map { buffer ->
-            justifyString(justify, buffer)
+        var charMatrix = queue.map { buff ->
+            justifyString(justify, buff)
                 .map { it.replace(font.hardBlank, " ") }
         }
         val rows = charMatrix.size
@@ -53,9 +50,6 @@ class PixelMatrixText(
         charMatrix = trimLeft(charMatrix)
         width = charMatrix.maxOf { line -> line.maxOf { row -> row.length } }
         initializeMatrix()
-        if (ensureWidth) {
-
-        }
         charMatrix.forEachIndexed { l, line ->
             line.forEachIndexed { y, row ->
                 row.forEachIndexed { x, char ->
@@ -63,10 +57,14 @@ class PixelMatrixText(
                 }
             }
         }
-        ensureWidth()
+        ensureWidth(ensureWidth, width, textWidth)
     }
 
-    private fun ensureWidth() {
+    private fun ensureWidth(
+        ensureWidth: Boolean,
+        width: Int,
+        textWidth: Int,
+    ) {
         if (ensureWidth && width < textWidth) {
             when (justify) {
                 Justify.auto, Justify.left -> {
@@ -87,21 +85,31 @@ class PixelMatrixText(
         }
     }
 
-    private fun trimLeft(charMatrix: List<List<String>>): List<List<String>> {
+    private fun trimLeft(
+        charMatrix: List<List<String>>
+    ): List<List<String>> {
         val spaces = charMatrix.flatMap { line -> line.map { row -> "^ +".toRegex().find(row)?.value?.length ?: 0 } }.min()
         return charMatrix.map { line -> line.map { it.drop(spaces) } }
     }
 
-    private fun addChar() {
+    private fun addChar(
+        buffer: Array<String>,
+        chars: List<Int>,
+        queue: MutableList<Array<String>>,
+        blankMarkers: MutableList<Pair<Array<String>, Int>>,
+        font: FigletFont,
+        smusher: FigletSmusher,
+        textWidth: Int
+    ) {
         val tuple = Pair(buffer.clone(), iterator)
-        val c = chars[iterator]
-        if (c == '\n'.code) {
+        val code = chars[iterator]
+        if (code == '\n'.code) {
             blankMarkers.add(tuple)
-            handleNewline()
+            handleNewline(buffer, chars, queue, blankMarkers, font, smusher)
         } else {
-            val curChar = font.chars[chars[iterator]]
+            val curChar = font.chars[code]
             if (curChar != null) {
-                curCharWidth = font.width[chars[iterator]] ?:0
+                curCharWidth = font.width[code] ?:0
                 if (textWidth < curCharWidth) {
                     throw IllegalStateException("No space left to print char")
                 }
@@ -111,11 +119,11 @@ class PixelMatrixText(
                     0
                 }
                 currentTotalWidth = buffer[0].length + curCharWidth - maxSmush
-                if (c == ' '.code) {
+                if (code == ' '.code) {
                     blankMarkers.add(tuple)
                 }
                 if (currentTotalWidth >= textWidth) {
-                    handleNewline()
+                    handleNewline(buffer, chars, queue, blankMarkers, font, smusher)
                 } else {
                     for (row in 0 until font.height) {
                         val (addLeft, addRight) = smusher.smushRow(buffer[row], curChar, row, maxSmush, curCharWidth, prevCharWidth)
@@ -127,10 +135,17 @@ class PixelMatrixText(
         }
     }
 
-    private fun handleNewline() {
+    private fun handleNewline(
+        buffer: Array<String>,
+        chars: List<Int>,
+        queue: MutableList<Array<String>>,
+        blankMarkers: MutableList<Pair<Array<String>, Int>>,
+        font: FigletFont,
+        smusher: FigletSmusher
+    ) {
         if (blankMarkers.isNotEmpty()) {
             val (savedBuffer, savedIterator) = blankMarkers.first()
-            blankMarkers = blankMarkers.drop(1).toMutableList()
+            blankMarkers.removeAt(0)
             queue.add(savedBuffer)
             iterator = savedIterator
         } else {
@@ -150,8 +165,8 @@ class PixelMatrixText(
 
     private fun justifyString(justify: Justify, buffer: Array<String>): Array<String> {
         return when (justify) {
-            Justify.right -> buffer.map { row -> " ".repeat((width - row.length)) + row }.toTypedArray()
-            Justify.center -> buffer.map { row -> " ".repeat((width - row.length) / 2) + row }.toTypedArray()
+            Justify.right -> buffer.map { row -> " ".repeat((textWidth - row.length)) + row }.toTypedArray()
+            Justify.center -> buffer.map { row -> " ".repeat((textWidth - row.length) / 2) + row }.toTypedArray()
             else -> buffer
         }
     }
