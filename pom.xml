@@ -18,11 +18,11 @@
 
         <kotlin.code.style>official</kotlin.code.style>
 
-        <version.kotlin.maven>1.9.20</version.kotlin.maven>
+        <version.kotlin.maven>1.9.22</version.kotlin.maven>
         <version.kotlin.language>1.9</version.kotlin.language>
 
-        <version.jackson>2.14.2</version.jackson>
-        <version.junit>5.10.0</version.junit>
+        <version.jackson>2.16.1</version.jackson>
+        <version.junit>5.10.2</version.junit>
 
         <!-- workaround for a bug in maven -->
         <build-timestamp>${maven.build.timestamp}</build-timestamp>
@@ -54,14 +54,14 @@
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-stdlib</artifactId>
-            <version>1.9.20</version>
+            <version>${version.kotlin.maven}</version>
         </dependency>
 
         <!-- command line parsing -->
         <dependency>
             <groupId>org.jetbrains.kotlinx</groupId>
             <artifactId>kotlinx-cli-jvm</artifactId>
-            <version>0.3.5</version>
+            <version>0.3.6</version>
         </dependency>
 
         <!-- testing -->
@@ -130,7 +130,7 @@
             <plugin>
                 <groupId>org.jetbrains.dokka</groupId>
                 <artifactId>dokka-maven-plugin</artifactId>
-                <version>1.8.20</version>
+                <version>1.9.10</version>
                 <executions>
                     <execution>
                         <phase>pre-site</phase>
@@ -160,7 +160,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.1.2</version>
+                <version>3.2.5</version>
                 <configuration>
                     <systemPropertyVariables>
                         <maven.home>${maven.home}</maven.home>
@@ -170,7 +170,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
-                <version>3.1.2</version>
+                <version>3.2.5</version>
             </plugin>
 
             <!-- release management -->
@@ -179,33 +179,6 @@
                 <artifactId>maven-release-plugin</artifactId>
                 <version>3.0.1</version>
             </plugin>
-
-            <!-- generate native image -->
-            <!-- disabled due to no support fow awt on mac os at the time of writing (August 2023) -->
-            <!--plugin>
-                <groupId>org.graalvm.buildtools</groupId>
-                <artifactId>native-maven-plugin</artifactId>
-                <version>0.9.23</version>
-                <extensions>true</extensions>
-                <executions>
-                    <execution>
-                        <id>build-native</id>
-                        <goals>
-                            <goal>build</goal>
-                        </goals>
-                        <phase>package</phase>
-                    </execution>
-                </executions>
-                <configuration>
-                    <fallback>false</fallback>
-                    <buildArgs>
-                        <arg>-H:DashboardDump=fortune -H:+DashboardAll</arg>
-                    </buildArgs>
-                    <agent>
-                        <enabled>true</enabled>
-                    </agent>
-                </configuration>
-            </plugin-->
 
             <!-- generate executable jar -->
             <plugin>
