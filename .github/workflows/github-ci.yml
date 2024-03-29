@@ -1,4 +1,4 @@
-name: Twinkly API Kotlin
+name: BannerMatic Kotlin
 
 on:
   push:
