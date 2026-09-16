@@ -1,16 +1,17 @@
 package de.visualdigits.kotlin.bannermatic.model.pixelmatrix
 
-import de.visualdigits.kotlin.bannermatic.model.ansicolor.AnsiColorChar
+import de.visualdigits.kotlin.bannermatic.model.ansicolor.AnsiColorString
 import de.visualdigits.kotlin.bannermatic.model.font.Direction
 import de.visualdigits.kotlin.bannermatic.model.font.FigletFont
 import de.visualdigits.kotlin.bannermatic.model.font.FigletSmusher
+import de.visualdigits.kotlin.bannermatic.model.font.FontName
 import de.visualdigits.kotlin.bannermatic.model.font.Justify
 
 class PixelMatrixText(
-    val textWidth: Int = 80,
+    val textWidth: Int = 9999,
     ensureWidth: Boolean = false,
-    initialChar: AnsiColorChar = AnsiColorChar(),
-    val fontName: String = "basic",
+    initialChar: AnsiColorString = AnsiColorString(),
+    val fontName: FontName = FontName.Basic,
     val direction: Direction = Direction.auto,
     val justify: Justify = Justify.auto,
     val text: String
@@ -25,8 +26,7 @@ class PixelMatrixText(
     private var currentTotalWidth = 0
 
     init {
-        val fname = if (!fontName.endsWith(".flf") && !fontName.endsWith(".flc")) "$fontName.flf" else fontName
-        val font = FigletFont("fonts/$fname")
+        val font = FigletFont(fontName)
         val buffer = Array(font.height) { "" }
         val chars: List<Int> = text.map { it.code }
         val blankMarkers = mutableListOf<Pair<Array<String>, Int>>()

@@ -1,9 +1,10 @@
 package de.visualdigits.kotlin.bannermatic.main
 
 import de.visualdigits.kotlin.bannermatic.model.ansicolor.AnsiColor4bit
-import de.visualdigits.kotlin.bannermatic.model.ansicolor.AnsiColorChar
+import de.visualdigits.kotlin.bannermatic.model.ansicolor.AnsiColorString
 import de.visualdigits.kotlin.bannermatic.model.ansicolor.AnsiColorRgb
 import de.visualdigits.kotlin.bannermatic.model.font.Direction
+import de.visualdigits.kotlin.bannermatic.model.font.FontName
 import de.visualdigits.kotlin.bannermatic.model.font.Justify
 import de.visualdigits.kotlin.bannermatic.model.pixelmatrix.PixelMatrixBanner
 import de.visualdigits.kotlin.bannermatic.model.pixelmatrix.TextPosition
@@ -21,6 +22,11 @@ class BannerCommand: Subcommand("banner", "Generate pixel matrix combined from a
         type = ArgType.Int,
         shortName = "wi",
         description = "Width of the image (default is 80 pixels)."
+    ).default(80)
+    private val heightImage by option(
+        type = ArgType.Int,
+        shortName = "hi",
+        description = "Height of the image (default is 80 pixels)."
     ).default(80)
     private val initialBgColorImage by option(
         type = ArgType.String,
@@ -102,26 +108,27 @@ class BannerCommand: Subcommand("banner", "Generate pixel matrix combined from a
     )
 
     override fun execute() {
-        val initialCharImage = AnsiColorChar(
+        val initialCharImage = AnsiColorString(
             bgColor = initialBgColorImage?.let { AnsiColorRgb(it) } ?: AnsiColor4bit(),
             fgColor = initialFgColorImage?.let { AnsiColorRgb(it) }
         )
 
-        val initialCharText = AnsiColorChar(
+        val initialCharText = AnsiColorString(
             bgColor = initialBgColorText?.let { AnsiColorRgb(it) } ?: AnsiColor4bit(),
             fgColor = initialFgColorText?.let { AnsiColorRgb(it) }
         )
 
         val bannerMatrix = PixelMatrixBanner(
+            targetWidth = widthImage,
+            targetHeight = heightImage,
             imageFile = File(imageFile),
-            imageWidth = widthImage,
             initialCharImage = initialCharImage,
             pixelRatio = pixelRatio,
             useSubPixels = useSubPixels,
 
             text = text,
             textWidth = textWidth,
-            fontName = fontName,
+            fontName = FontName.valueOf(fontName),
             direction = direction,
             justify = justify,
             initialCharText = initialCharText,

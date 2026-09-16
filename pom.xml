@@ -11,18 +11,17 @@
     <name>bannermatic-kt</name>
 
     <properties>
-        <jdk.version>17</jdk.version>
-        <project.build.source>17</project.build.source>
-        <project.build.target>17</project.build.target>
+        <jdk.version>21</jdk.version>
+        <project.build.source>21</project.build.source>
+        <project.build.target>21</project.build.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <kotlin.code.style>official</kotlin.code.style>
 
-        <version.kotlin.maven>1.9.23</version.kotlin.maven>
-        <version.kotlin.language>1.9</version.kotlin.language>
+        <version.kotlin.maven>2.3.0</version.kotlin.maven>
+        <version.kotlin.language>2.3</version.kotlin.language>
 
-        <version.jackson>2.16.2</version.jackson>
-        <version.junit>5.10.2</version.junit>
+        <version.junit>6.1.2</version.junit>
 
         <!-- workaround for a bug in maven -->
         <build-timestamp>${maven.build.timestamp}</build-timestamp>

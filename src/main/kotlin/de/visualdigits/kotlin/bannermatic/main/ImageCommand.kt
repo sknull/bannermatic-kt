@@ -1,7 +1,7 @@
 package de.visualdigits.kotlin.bannermatic.main
 
 import de.visualdigits.kotlin.bannermatic.model.ansicolor.AnsiColor4bit
-import de.visualdigits.kotlin.bannermatic.model.ansicolor.AnsiColorChar
+import de.visualdigits.kotlin.bannermatic.model.ansicolor.AnsiColorString
 import de.visualdigits.kotlin.bannermatic.model.ansicolor.AnsiColorRgb
 import de.visualdigits.kotlin.bannermatic.model.pixelmatrix.PixelMatrixImage
 import kotlinx.cli.ArgType
@@ -18,6 +18,11 @@ class ImageCommand: Subcommand("image", "Generate pixel matrix from an image.") 
         type = ArgType.Int,
         shortName = "w",
         description = "Width of the image (default is 80 pixels)."
+    ).default(80)
+    val height by option(
+        type = ArgType.Int,
+        shortName = "h",
+        description = "Height of the image (default is 80 pixels)."
     ).default(80)
     val initialBgColor by option(
         type = ArgType.String,
@@ -73,14 +78,15 @@ class ImageCommand: Subcommand("image", "Generate pixel matrix from an image.") 
     )
 
     override fun execute() {
-        val initialChar = AnsiColorChar(
+        val initialChar = AnsiColorString(
             bgColor = initialBgColor?.let { AnsiColorRgb(it) } ?: AnsiColor4bit(),
             fgColor = initialFgColor?.let { AnsiColorRgb(it) }
         )
 
         val imageMatrix = PixelMatrixImage(
+            targetWidth = width,
+            targetHeight = height,
             imageFile = File(imageFile),
-            width = width,
             initialChar = initialChar,
             useSubPixels = useSubPixels,
             pixelRatio = pixelRatio

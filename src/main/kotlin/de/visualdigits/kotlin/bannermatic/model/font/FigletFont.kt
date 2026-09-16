@@ -3,7 +3,7 @@ package de.visualdigits.kotlin.bannermatic.model.font
 import java.nio.charset.StandardCharsets
 
 class FigletFont(
-    val resourcePath: String
+    fontName: FontName
 ) {
     val classLoader = Thread.currentThread().contextClassLoader
 
@@ -24,19 +24,19 @@ class FigletFont(
     val width: MutableMap<Int, Int> = mutableMapOf()
 
     init {
-        val ins = classLoader.getResourceAsStream(resourcePath)
+        val ins = classLoader.getResourceAsStream("figletfonts/${fontName.fontResource}")
         var lines = ins?.bufferedReader(StandardCharsets.UTF_8).use { reader ->
             reader?.readLines()
         }?: listOf()
 
         val header: String = lines.first()
         if (MAGIC_NUMBER.findAll(header).toList().isEmpty()) {
-            throw IllegalArgumentException("Invalid font: $resourcePath")
+            error("Invalid font: ${fontName.fontResource}")
         }
         val headerParts = MAGIC_NUMBER.replace(header, "").split(" ")
         val n = headerParts.size
         if (n < 6) {
-            throw IllegalArgumentException("Invalid header for font: $resourcePath")
+            error("Invalid header for font: ${fontName.fontResource}")
         }
         this.hardBlank = headerParts[0][0].toString()
         this.height = headerParts[1].toInt()
@@ -98,7 +98,7 @@ class FigletFont(
         var end: Regex? = null
         var width = 0
         val chrs = mutableListOf<String>()
-        for (dummy in 0 until this.height) {
+        (0 until this.height).forEach { _ ->
             var line = lines.first()
             lines = lines.drop(1)
             if (end == null) {
@@ -111,8 +111,8 @@ class FigletFont(
             chrs.add(line)
         }
         if (chrs.joinToString("").isNotEmpty()) {
-            this.width.put(i, width)
-            this.chars.put(i, chrs.toList())
+            this.width[i] = width
+            this.chars[i] = chrs.toList()
         }
         return lines
     }
@@ -122,7 +122,7 @@ class FigletFont(
             str.toLong()
             str.toDouble()
             true
-        } catch (nfe: NumberFormatException) {
+        } catch (_: NumberFormatException) {
              false
         }
     }

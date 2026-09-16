@@ -3,29 +3,22 @@ package de.visualdigits.kotlin.bannermatic.model.pixelmatrix
 import de.visualdigits.kotlin.bannermatic.model.ansicolor.AnsiCode
 import de.visualdigits.kotlin.bannermatic.model.ansicolor.AnsiColor
 import de.visualdigits.kotlin.bannermatic.model.ansicolor.AnsiColor4bit
-import de.visualdigits.kotlin.bannermatic.model.ansicolor.AnsiColorChar
+import de.visualdigits.kotlin.bannermatic.model.ansicolor.AnsiColorString
 import de.visualdigits.kotlin.bannermatic.model.ansicolor.AnsiColorRgb
 import java.io.File
 
 @Suppress("UNCHECKED_CAST")
-open class PixelMatrix<T : PixelMatrix<T>>(
-    var width: Int = 80,
-    var height: Int = 80,
-    val initialChar: AnsiColorChar = AnsiColorChar(),
-    initializeMatrix: Boolean = false
+abstract class PixelMatrix<T : PixelMatrix<T>>(
+    val initialChar: AnsiColorString = AnsiColorString()
 ) {
+    var width: Int = 80
+    var height: Int = 80
 
-    private val matrix: MutableList<MutableList<AnsiColorChar>> = mutableListOf()
-
-    init {
-        if (initializeMatrix) {
-            initializeMatrix()
-        }
-    }
+    private val matrix: MutableList<MutableList<AnsiColorString>> = mutableListOf()
 
     protected fun initializeMatrix() {
         for (y in 0 until height) {
-            val row: MutableList<AnsiColorChar> = mutableListOf()
+            val row: MutableList<AnsiColorString> = mutableListOf()
             for (x in 0 until width) {
                 row.add(initialChar.clone())
             }
@@ -48,13 +41,13 @@ open class PixelMatrix<T : PixelMatrix<T>>(
         file.writeText(toString())
     }
 
-    fun set(x: Int, y: Int, char: AnsiColorChar): T {
+    fun set(x: Int, y: Int, char: AnsiColorString): T {
         matrix[y][x] = char
         return this as T
     }
 
     fun setChar(x: Int, y: Int, char: String): T {
-        matrix[y][x].char = char
+        matrix[y][x].value = char
         return this as T
     }
 
@@ -70,11 +63,11 @@ open class PixelMatrix<T : PixelMatrix<T>>(
         return this as T
     }
 
-    fun get(x: Int, y: Int): AnsiColorChar {
+    fun get(x: Int, y: Int): AnsiColorString {
         return matrix[y][x]
     }
 
-    fun extend(left: Int, top: Int, right: Int, bottom: Int, initialChar: AnsiColorChar = this.initialChar): T {
+    fun extend(left: Int, top: Int, right: Int, bottom: Int, initialChar: AnsiColorString = this.initialChar): T {
         if (left > 0) {
             val leftList = List(left) { initialChar.clone() }
             matrix.forEach { row ->

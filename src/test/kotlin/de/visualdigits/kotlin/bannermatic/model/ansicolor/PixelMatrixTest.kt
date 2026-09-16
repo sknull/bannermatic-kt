@@ -1,61 +1,47 @@
 package de.visualdigits.kotlin.bannermatic.model.ansicolor
 
+import de.visualdigits.kotlin.bannermatic.model.font.FontName
 import de.visualdigits.kotlin.bannermatic.model.font.Justify
 import de.visualdigits.kotlin.bannermatic.model.pixelmatrix.*
+import de.visualdigits.kotlin.extensions.toPixelMatrix
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import java.io.File
+import javax.imageio.ImageIO
 
 @Disabled("Only for manual testing")
 class PixelMatrixTest {
 
     @Test
-    fun withPixels() {
-        val width = 10
-        val height = 10
-        val pm = PixelMatrix(width, height, AnsiColorChar(bgColor = AnsiColorRgb(r = 255, g = 255, b = 255)), initializeMatrix = true)
-        for (y in 0 until height) {
-            for (x in 0 until width) {
-                pm.setBgColor(x, y, AnsiColorRgb(
-                    r = (x.toFloat() / width * 255.0).toInt(),
-                    g = (y.toFloat() / height * 255.0).toInt(),
-                    b = 0
-                ))
-            }
-        }
-        pm.extend(1,1,20,1)
-        val red = PixelMatrix(10, 5, AnsiColorChar(bgColor = AnsiColorRgb(r = 0, g = 0, b = 0), fgColor = AnsiColorRgb(r = 255, g = 0, b = 0), char = "#"), initializeMatrix = true)
-        pm.paint(red, 12, 3)
-        println(pm)
-    }
-
-    @Test
     fun testImage() {
-        val imageFile = File(ClassLoader.getSystemResource("images/kodi.png").toURI())
-//        val imageFile = File(ClassLoader.getSystemResource("images/raspberry/raspberrypi.png").toURI())
-//        val imageFile = File(ClassLoader.getSystemResource("images/minion.png").toURI())
-//        val imageFile = File(ClassLoader.getSystemResource("images/subpixel/tree2.jpg").toURI())
-
-        val pm = PixelMatrixImage(
-            imageFile = imageFile,
-            width = 40,
-            useSubPixels = true
+        val matrix1 = File(ClassLoader.getSystemResource("images/Graffitomat_ascii-banner.png").toURI()).toPixelMatrix(
+            targetWidth = 180,
         )
-        println(pm)
+        println(matrix1)
+
+        val matrix2 = ImageIO.read(
+            File(ClassLoader.getSystemResource("images/raspberry/raspberrypi.png").toURI())
+        ).toPixelMatrix(
+            targetWidth = 80,
+        )
+        println(matrix2)
+
+//        File("E:\\Programmierung\\IntelliJ\\graffitomat\\backendServer\\src\\main\\resources\\banner.txt")
+//            .writeText(pm.toString())
     }
 
     @Test
     fun testText() {
-        val pm = PixelMatrixText(
-            text = "Team GRU",
-            textWidth = 40,
+        val matrix1 = "Team   GRU".toPixelMatrix(
+            fontName = FontName.Usaflag,
+            textWidth = 180,
             justify = Justify.center,
-            initialChar = AnsiColorChar(
-                fgColor = AnsiColorRgb(r = 187, g = 16, b = 66),
-                bgColor = AnsiColorRgb(r = 0, g = 255, b = 0)
+            initialChar = AnsiColorString(
+                fgColor = AnsiColorRgb(r = 255, g = 255, b = 255),
+                bgColor = AnsiColorRgb(r = 0, g = 0, b = 128)
             )
         )
-        println(pm)
+        println(matrix1)
     }
 
     @Test
@@ -65,12 +51,11 @@ class PixelMatrixTest {
 //        val imageFile = File(ClassLoader.getSystemResource("images/subpixel/tree2.jpg").toURI())
 
         val pm = PixelMatrixBanner(
-
             imageFile = imageFile,
-            imageWidth = 60,
-//            imageWidth = 27,
-//            imageWidth = 76,
-//            initialCharImage = AnsiColorChar(
+            targetWidth = 60,
+//            targetWidth = 27,
+//            targetWidth = 76,
+//            initialCharImage = AnsiColorString(
 //                bgColor = AnsiColorRgb(r = 255, g = 255, b = 255),
 //                fgColor = AnsiColorRgb(r = 187, g = 16, b = 66)
 //            ),
@@ -79,15 +64,15 @@ class PixelMatrixTest {
             text = "KodiBerry",
             textWidth = 80,
             justify = Justify.center,
-            initialCharText = AnsiColorChar(
+            initialCharText = AnsiColorString(
                 fgColor = AnsiColorRgb(r = 38, g = 140, b = 180)
             ),
             textGap = 0,
             textPosition = TextPosition.bottom
         )
 //        .extend(2, 1, 2, 1)
-//        .extend(2, 1, 2, 1, AnsiColorChar(bgColor = AnsiColorRgb(r = 117, g = 169, b = 39)))
-//        .extend(2, 1, 2, 1, AnsiColorChar(bgColor = AnsiColorRgb(r = 187, g = 16, b = 66)))
+//        .extend(2, 1, 2, 1, AnsiColorString(bgColor = AnsiColorRgb(r = 117, g = 169, b = 39)))
+//        .extend(2, 1, 2, 1, AnsiColorString(bgColor = AnsiColorRgb(r = 187, g = 16, b = 66)))
         pm.writeToFile(File("./src/test/resources/banners/banner_kodiberry.txt"))
         println(pm)
     }

@@ -1,6 +1,6 @@
 package de.visualdigits.kotlin.bannermatic.model.pixelmatrix
 
-import de.visualdigits.kotlin.bannermatic.model.ansicolor.AnsiColorChar
+import de.visualdigits.kotlin.bannermatic.model.ansicolor.AnsiColorString
 import de.visualdigits.kotlin.bannermatic.model.ansicolor.AnsiColorRgb
 import de.visualdigits.kotlin.extensions.fade
 import de.visualdigits.kotlin.extensions.isTransparent
@@ -9,17 +9,34 @@ import java.awt.Color
 import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
+import kotlin.math.roundToInt
 
 class PixelMatrixImage(
-    width: Int,
-    initialChar: AnsiColorChar = AnsiColorChar(),
-    val imageFile: File,
-    val useSubPixels: Boolean = true,
-    val pixelRatio: Double = Companion.pixelRatio
+    private val targetWidth: Int? = null,
+    private val targetHeight: Int? = null,
+    initialChar: AnsiColorString = AnsiColorString(),
+    private val image: BufferedImage,
+    useSubPixels: Boolean = true,
+    pixelRatio: Double = Companion.pixelRatio
 ): PixelMatrix<PixelMatrixImage>(
-    width = width,
     initialChar = initialChar
 ) {
+
+    constructor(
+        targetWidth: Int? = null,
+        targetHeight: Int? = null,
+        initialChar: AnsiColorString = AnsiColorString(),
+        imageFile: File,
+        useSubPixels: Boolean = true,
+        pixelRatio: Double = Companion.pixelRatio
+    ): this(
+        targetWidth = targetWidth,
+        targetHeight = targetHeight,
+        initialChar = initialChar,
+        image = ImageIO.read(imageFile),
+        useSubPixels = useSubPixels,
+        pixelRatio = pixelRatio
+    )
 
     companion object {
 
@@ -273,20 +290,25 @@ class PixelMatrixImage(
     }
 
     init {
-        ImageIO.read(imageFile)?.let { image ->
-            val ratio = pixelRatio * image.height / image.width
-            height = Math.round(width * ratio).toInt()
-            initializeMatrix()
+        check((targetWidth != null) xor (targetHeight != null)) { "You must specify either targetWidth or targetHeight not both" }
+        val ratio = image.width.toDouble() / image.height
+        if (targetWidth != null) {
+            width = targetWidth
+            height = (targetWidth / ratio * pixelRatio).roundToInt()
+        } else if (targetHeight != null) {
+            width = (targetHeight * ratio / pixelRatio).roundToInt()
+            height = targetHeight
+        }
+        initializeMatrix()
 
-            if (useSubPixels) {
-                renderSubPixelMatrix(image)
-            } else {
-                renderSimpleMatrix(image)
-            }
+        if (useSubPixels) {
+            renderSubPixelMatrix()
+        } else {
+            renderSimpleMatrix()
         }
     }
 
-    private fun renderSimpleMatrix(image: BufferedImage) {
+    private fun renderSimpleMatrix() {
         val img = image.scale(width, height)
         val hasAlpha = img.colorModel.hasAlpha()
         for (y in 0 until height) {
@@ -300,7 +322,7 @@ class PixelMatrixImage(
         }
     }
 
-    private fun renderSubPixelMatrix(image: BufferedImage) {
+    private fun renderSubPixelMatrix() {
         val w = width * 3
         val h = height * 3
         val img = image.scale(w, h)
@@ -323,7 +345,7 @@ class PixelMatrixImage(
                 if (blockFinal.sum() > 0) {
                     val color = AnsiColorRgb(colors.reduce { a, b -> a.fade(b) })
                     if (!color.isTransparent()) {
-                        set(x / 3, y / 3, AnsiColorChar(fgColor = color, char = distance(blockFinal)))
+                        set(x / 3, y / 3, AnsiColorString(fgColor = color, value = distance(blockFinal)))
                     }
                 }
             }

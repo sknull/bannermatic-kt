@@ -1,21 +1,25 @@
 package de.visualdigits.kotlin.bannermatic.model.pixelmatrix
 
-import de.visualdigits.kotlin.bannermatic.model.ansicolor.AnsiColorChar
+import de.visualdigits.kotlin.bannermatic.model.ansicolor.AnsiColorString
 import de.visualdigits.kotlin.bannermatic.model.font.Direction
+import de.visualdigits.kotlin.bannermatic.model.font.FontName
 import de.visualdigits.kotlin.bannermatic.model.font.Justify
+import java.awt.image.BufferedImage
 import java.io.File
+import javax.imageio.ImageIO
 
 class PixelMatrixBanner(
-    imageFile: File,
-    imageWidth: Int = 80,
-    initialCharImage: AnsiColorChar = AnsiColorChar(),
+    targetWidth: Int? = null,
+    targetHeight: Int? = null,
+    image: BufferedImage,
+    initialCharImage: AnsiColorString = AnsiColorString(),
     useSubPixels: Boolean = true,
     pixelRatio: Double = PixelMatrixImage.pixelRatio,
 
     text: String,
     textWidth: Int = 80,
-    initialCharText: AnsiColorChar = AnsiColorChar(),
-    fontName: String = "basic",
+    initialCharText: AnsiColorString = AnsiColorString(),
+    fontName: FontName = FontName.Basic,
     justify: Justify = Justify.auto,
     direction: Direction = Direction.auto,
 
@@ -23,10 +27,47 @@ class PixelMatrixBanner(
     textPosition: TextPosition = TextPosition.right
 ): PixelMatrix<PixelMatrixBanner>() {
 
+    constructor(
+        targetWidth: Int? = 80,
+        targetHeight: Int? = null,
+        imageFile: File,
+        initialCharImage: AnsiColorString = AnsiColorString(),
+        useSubPixels: Boolean = true,
+        pixelRatio: Double = PixelMatrixImage.pixelRatio,
+
+        text: String,
+        textWidth: Int = 80,
+        initialCharText: AnsiColorString = AnsiColorString(),
+        fontName: FontName = FontName.Basic,
+        justify: Justify = Justify.auto,
+        direction: Direction = Direction.auto,
+
+        textGap: Int = 0,
+        textPosition: TextPosition = TextPosition.right
+    ): this(
+        targetWidth = targetWidth,
+        targetHeight = targetHeight,
+        image = ImageIO.read(imageFile),
+        initialCharImage = initialCharImage,
+        useSubPixels = useSubPixels,
+        pixelRatio = pixelRatio,
+    
+        text = text,
+        textWidth = textWidth,
+        initialCharText = initialCharText,
+        fontName = fontName,
+        justify = justify,
+        direction = direction,
+    
+        textGap = textGap,
+        textPosition = textPosition
+    )
+    
     init {
         val imageMatrix = PixelMatrixImage(
-            imageFile = imageFile,
-            width = imageWidth,
+            targetWidth = targetWidth,
+            targetHeight = targetHeight,
+            image = image,
             initialChar = initialCharImage,
             useSubPixels = useSubPixels,
             pixelRatio = pixelRatio

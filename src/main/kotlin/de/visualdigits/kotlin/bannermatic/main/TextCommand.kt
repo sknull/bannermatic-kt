@@ -1,9 +1,10 @@
 package de.visualdigits.kotlin.bannermatic.main
 
 import de.visualdigits.kotlin.bannermatic.model.ansicolor.AnsiColor4bit
-import de.visualdigits.kotlin.bannermatic.model.ansicolor.AnsiColorChar
+import de.visualdigits.kotlin.bannermatic.model.ansicolor.AnsiColorString
 import de.visualdigits.kotlin.bannermatic.model.ansicolor.AnsiColorRgb
 import de.visualdigits.kotlin.bannermatic.model.font.Direction
+import de.visualdigits.kotlin.bannermatic.model.font.FontName
 import de.visualdigits.kotlin.bannermatic.model.font.Justify
 import de.visualdigits.kotlin.bannermatic.model.pixelmatrix.PixelMatrixText
 import kotlinx.cli.ArgType
@@ -80,14 +81,14 @@ class TextCommand: Subcommand("text", "Generate pixel matrix from a text.") {
     )
 
     override fun execute() {
-        val initialChar = AnsiColorChar(
+        val initialChar = AnsiColorString(
             bgColor = initialBgColor?.let { AnsiColorRgb(it) } ?: AnsiColor4bit(),
             fgColor = initialFgColor?.let { AnsiColorRgb(it) }
         )
 
         val textMatrix = PixelMatrixText(
             text = text,
-            fontName = fontName,
+            fontName = FontName.valueOf(fontName),
             textWidth = width,
             justify = justify,
             initialChar = initialChar,
