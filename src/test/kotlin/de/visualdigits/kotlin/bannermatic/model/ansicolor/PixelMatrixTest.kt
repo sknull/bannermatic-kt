@@ -46,13 +46,13 @@ class PixelMatrixTest {
 
     @Test
     fun testBanner() {
-//        val imageFile = File(ClassLoader.getSystemResource("images/raspberry/raspberrypi.png").toURI())
-        val imageFile = File(ClassLoader.getSystemResource("images/kodi.png").toURI())
+        val imageFile = File(ClassLoader.getSystemResource("images/raspberry/raspberrypi.png").toURI())
+//        val imageFile = File(ClassLoader.getSystemResource("images/kodi.png").toURI())
 //        val imageFile = File(ClassLoader.getSystemResource("images/subpixel/tree2.jpg").toURI())
 
         val pm = PixelMatrixBanner(
             imageFile = imageFile,
-            targetWidth = 60,
+            targetWidth = 40,
 //            targetWidth = 27,
 //            targetWidth = 76,
 //            initialCharImage = AnsiColorString(
@@ -61,19 +61,21 @@ class PixelMatrixTest {
 //            ),
 
 //            text = "Raspberry Pi",
-            text = "KodiBerry",
-            textWidth = 80,
+//            text = "KodiBerry",
+            text = "XLED Con trol",
+            textWidth = 40,
             justify = Justify.center,
             initialCharText = AnsiColorString(
-                fgColor = AnsiColorRgb(r = 38, g = 140, b = 180)
+                fgColor = AnsiColorRgb(r = 188, g = 17, b = 66)
+//                fgColor = AnsiColorRgb(r = 38, g = 140, b = 180)
             ),
-            textGap = 0,
+            textGap = 1,
             textPosition = TextPosition.bottom
         )
 //        .extend(2, 1, 2, 1)
 //        .extend(2, 1, 2, 1, AnsiColorString(bgColor = AnsiColorRgb(r = 117, g = 169, b = 39)))
 //        .extend(2, 1, 2, 1, AnsiColorString(bgColor = AnsiColorRgb(r = 187, g = 16, b = 66)))
-        pm.writeToFile(File("./src/test/resources/banners/banner_kodiberry.txt"))
+        pm.writeToFile(File("./src/test/resources/banners/banner_xledcontrol.txt"))
         println(pm)
     }
 }

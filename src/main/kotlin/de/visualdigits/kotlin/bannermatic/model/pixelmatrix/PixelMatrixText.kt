@@ -28,13 +28,13 @@ class PixelMatrixText(
     init {
         val font = FigletFont(fontName)
         val buffer = Array(font.height) { "" }
-        val chars: List<Int> = text.map { it.code }
+//        val chars: List<Int> = text.map { it.code }
         val blankMarkers = mutableListOf<Pair<Array<String>, Int>>()
         val queue = mutableListOf<Array<String>>()
         val smusher = FigletSmusher(direction, font)
 
         while (iterator < text.length) {
-            addChar(buffer, chars, queue, blankMarkers, font, smusher, textWidth)
+            addChar(buffer, text, queue, blankMarkers, font, smusher, textWidth)
             iterator += 1
         }
         if (buffer[0].isNotEmpty()) {
@@ -94,7 +94,7 @@ class PixelMatrixText(
 
     private fun addChar(
         buffer: Array<String>,
-        chars: List<Int>,
+        text: String,
         queue: MutableList<Array<String>>,
         blankMarkers: MutableList<Pair<Array<String>, Int>>,
         font: FigletFont,
@@ -102,10 +102,10 @@ class PixelMatrixText(
         textWidth: Int
     ) {
         val tuple = Pair(buffer.clone(), iterator)
-        val code = chars[iterator]
+        val code = text[iterator].code
         if (code == '\n'.code) {
             blankMarkers.add(tuple)
-            handleNewline(buffer, chars, queue, blankMarkers, font, smusher)
+            handleNewline(buffer, text, queue, blankMarkers, font, smusher)
         } else {
             val curChar = font.chars[code]
             if (curChar != null) {
@@ -123,7 +123,7 @@ class PixelMatrixText(
                     blankMarkers.add(tuple)
                 }
                 if (currentTotalWidth >= textWidth) {
-                    handleNewline(buffer, chars, queue, blankMarkers, font, smusher)
+                    handleNewline(buffer, text, queue, blankMarkers, font, smusher)
                 } else {
                     for (row in 0 until font.height) {
                         val (addLeft, addRight) = smusher.smushRow(buffer[row], curChar, row, maxSmush, curCharWidth, prevCharWidth)
@@ -137,7 +137,7 @@ class PixelMatrixText(
 
     private fun handleNewline(
         buffer: Array<String>,
-        chars: List<Int>,
+        text: String,
         queue: MutableList<Array<String>>,
         blankMarkers: MutableList<Pair<Array<String>, Int>>,
         font: FigletFont,
@@ -157,7 +157,8 @@ class PixelMatrixText(
         buffer.fill("", 0, font.height)
         blankMarkers.clear()
         prevCharWidth = 0
-        val curChar = font.chars[chars[iterator]]
+        val ch = text[iterator]
+        val curChar = font.chars[ch.code]
         if (curChar?.isNotEmpty() == true) {
             maxSmush = smusher.currentSmushAmount(buffer, curChar, curCharWidth, prevCharWidth)
         }
